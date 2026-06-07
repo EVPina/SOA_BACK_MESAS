@@ -2,9 +2,13 @@ package com.soa.soamesas.controller;
 
 import com.soa.soamesas.entity.Mesa;
 import com.soa.soamesas.repository.MesaRepository;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -31,23 +35,9 @@ public class MesaController {
                 .orElse(null);
     }
 
-    // mesas libres
-    @GetMapping("/libres")
-    public List<Mesa> mesasLibres() {
-
-        return mesaRepository.findByEstado("LIBRE");
-    }
-
-    // mesas ocupadas
-    @GetMapping("/ocupadas")
-    public List<Mesa> mesasOcupadas() {
-
-        return mesaRepository.findByEstado("OCUPADA");
-    }
-
-    // ocupar mesa
-    @PutMapping("/{id}/ocupar")
-    public String ocuparMesa(@PathVariable UUID id) {
+    // asignar mesa
+    @PutMapping("/{id}/asignar")
+    public String asignarMesa(@PathVariable UUID id) {
 
         Mesa mesa = mesaRepository.findById(id)
                 .orElse(null);
@@ -71,24 +61,39 @@ public class MesaController {
         return "Mesa ocupada correctamente";
     }
 
-   // liberar mesa
-@PutMapping("/{id}/liberar")
-public String liberarMesa(@PathVariable UUID id) {
-
-    Mesa mesa = mesaRepository.findById(id)
-            .orElse(null);
-
-    if (mesa == null) {
-        return "Mesa no encontrada";
+     @GetMapping("/ocupacion")
+    public ResponseEntity<Map<String, Object>> mapaOcupacion() {
+        List<Mesa> todas = mesaRepository.findAll();
+        long ocupadas = todas.stream().filter(m -> "OCUPADA".equals(m.getEstado())).count();
+        long libres = todas.stream().filter(m -> "LIBRE".equals(m.getEstado())).count();
+        
+        Map<String, Object> mapa = new HashMap<>();
+        mapa.put("total", todas.size());
+        mapa.put("ocupadas", ocupadas);
+        mapa.put("libres", libres);
+        mapa.put("mesas", todas);
+        
+        return ResponseEntity.ok(mapa);
     }
 
-    mesa.setEstado("LIBRE");
+   // liberar mesa
+    @PutMapping("/{id}/liberar")
+    public String liberarMesa(@PathVariable UUID id) {
 
-    // IMPORTANTE
-    mesa.setOcupacionActual(0);
+        Mesa mesa = mesaRepository.findById(id)
+                .orElse(null);
 
-    mesaRepository.save(mesa);
+        if (mesa == null) {
+            return "Mesa no encontrada";
+        }
 
-    return "Mesa liberada correctamente";
-}
+        mesa.setEstado("LIBRE");
+
+        // IMPORTANTE
+        mesa.setOcupacionActual(0);
+
+        mesaRepository.save(mesa);
+
+        return "Mesa liberada correctamente";
+    }
 }
