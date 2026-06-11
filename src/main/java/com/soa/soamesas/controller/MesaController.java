@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/mesas")
+@RequestMapping("/api/mesas")
 public class MesaController {
 
     private final MesaRepository mesaRepository;
@@ -95,5 +95,11 @@ public class MesaController {
         mesaRepository.save(mesa);
 
         return "Mesa liberada correctamente";
+    }
+
+        // ✅ NUEVO: Obtener solo mesas disponibles (LIBRE)
+    @GetMapping("/disponibles")
+    public List<Mesa> mesasDisponibles() {
+        return mesaRepository.findByEstado("LIBRE");
     }
 }
