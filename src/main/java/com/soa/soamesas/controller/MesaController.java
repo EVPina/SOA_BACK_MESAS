@@ -3,6 +3,7 @@ package com.soa.soamesas.controller;
 import com.soa.soamesas.entity.Mesa;
 import com.soa.soamesas.repository.MesaRepository;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,7 +13,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/mesas")
+@RequestMapping("/api/v1/mesas")
 public class MesaController {
 
     private final MesaRepository mesaRepository;
@@ -36,29 +37,27 @@ public class MesaController {
     }
 
     // asignar mesa
-    @PutMapping("/{id}/asignar")
-    public String asignarMesa(@PathVariable UUID id) {
-
-        Mesa mesa = mesaRepository.findById(id)
-                .orElse(null);
-
+     @PutMapping("/{id}/asignar")
+    public ResponseEntity<Map<String, String>> asignarMesa(@PathVariable UUID id) {
+        Mesa mesa = mesaRepository.findById(id).orElse(null);
+        
         if (mesa == null) {
-            return "Mesa no encontrada";
+            Map<String, String> error = new HashMap<>();
+            error.put("error", "Mesa no encontrada");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
         }
-
+        
         mesa.setEstado("OCUPADA");
-
         Integer ocupacion = mesa.getOcupacionActual();
-
-        if (ocupacion == null) {
-            ocupacion = 0;
-        }
-
+        if (ocupacion == null) ocupacion = 0;
         mesa.setOcupacionActual(ocupacion + 1);
-
         mesaRepository.save(mesa);
-
-        return "Mesa ocupada correctamente";
+        
+        Map<String, String> response = new HashMap<>();
+        response.put("mensaje", "Mesa asignada correctamente");
+        response.put("mesaId", id.toString());
+        response.put("estado", "OCUPADA");
+        return ResponseEntity.ok(response);
     }
 
      @GetMapping("/ocupacion")

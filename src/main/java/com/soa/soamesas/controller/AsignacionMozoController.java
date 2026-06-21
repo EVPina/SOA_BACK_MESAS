@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/asignaciones-mozo")
+@RequestMapping("/api/v1/asignaciones-mozo")
 public class AsignacionMozoController {
 
     private final AsignacionMozoRepository asignacionMozoRepository;

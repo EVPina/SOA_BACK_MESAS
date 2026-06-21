@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/sesiones-mesa")
+@RequestMapping("/api/v1/sesiones-mesa")
 public class SesionMesaController {
 
     private final SesionMesaRepository sesionMesaRepository;
