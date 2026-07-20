@@ -20,6 +20,12 @@ public class AsignacionMozo {
     @Column(name = "mozo_id")
     private UUID mozoId;
 
+    @Column(name = "mesa_id")
+    private UUID mesaId;
+
+    @Column(name = "estado")
+    private String estado = "ACTIVO";
+
     @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 }
