@@ -14,9 +14,14 @@ public class Mesa {
     @Id
     private UUID id;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "zona_id")
+    private Zona zona;
+
     private Integer numero;
 
-    private Integer capacidad;
+    @Column(name = "capacidad_maxima")
+    private Integer capacidadMaxima;
 
     private String estado;
 
